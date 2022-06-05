@@ -1,4 +1,5 @@
 import pygame
+import time
 
 # стартуем в файле модули пайгейм
 pygame.init()
@@ -28,9 +29,30 @@ car_width = 73
 def car(x, y):
     gameDisplay.blit(carImg, (x, y))
 
+# функция выводит текст
+def text_objects(text, font):
+    textSurface = font.render(text, True, black)
+    return textSurface, textSurface.get_rect()
 
-x_change = 0  # позиция
+# функция для украшения текста
+def message_display(text):
+    largeText = pygame.font.Font('freesansbold.ttf', 115)
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.center = ((display_width / 2), (display_height / 2))
+    gameDisplay.blit(TextSurf, TextRect)
+
+    pygame.display.update()
+
+    time.sleep(2)
+
+    game_loop()
+
+
 car_speed = 0  # скорость
+
+# функция, которая вызывает в себе результат 2 предыдущих функций
+def crash():
+    message_display('You Crashed')
 
 
 def game_loop():
@@ -65,6 +87,7 @@ def game_loop():
         car(x, y)
 
         if x > display_width - car_width or x < 0:
+            crash()
             gameExit = True
 
 
