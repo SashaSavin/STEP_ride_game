@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import time
 
@@ -24,6 +26,9 @@ carImg = pygame.image.load('images/car.png')  # картинка для игро
 carImg = pygame.transform.scale(carImg, (70, 80))  # задаем размер картинки, если большая
 car_width = 73
 
+# функция для появляющихся элеметов на дороге
+def things(thingx, thingy, thingw, thingh, color):
+    pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
 
 # функция для отрисовки машины, параметры = позиция
 def car(x, y):
@@ -63,6 +68,12 @@ def game_loop():
 
     gameExit = False
 
+    thing_startx = random.randrange(0, display_width)
+    thing_starty = -600
+    thing_speed = 7
+    thing_width = 100
+    thing_height = 100
+
     while not gameExit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -83,12 +94,20 @@ def game_loop():
 
         # фон
         gameDisplay.fill(white)
+        # дорожные помехи
+        things(thing_startx, thing_starty, thing_width, thing_height, black)
+        thing_starty += thing_speed
+
         # создаем машину
         car(x, y)
 
         if x > display_width - car_width or x < 0:
             crash()
             gameExit = True
+
+        if thing_starty > display_height:
+            thing_starty = 0 - thing_height
+            thing_startx = random.randrange(0, display_width)
 
 
         pygame.display.update()
