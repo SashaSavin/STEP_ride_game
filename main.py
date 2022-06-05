@@ -26,6 +26,13 @@ carImg = pygame.image.load('images/car.png')  # картинка для игро
 carImg = pygame.transform.scale(carImg, (70, 80))  # задаем размер картинки, если большая
 car_width = 73
 
+# считаем сколько раз мы проехали мимо помехи
+def things_dodged(count):
+    font = pygame.font.SysFont(None, 25)
+    text = font.render("Dodged: "+str(count), True, black)
+    gameDisplay.blit(text,(0,0))
+
+
 # функция для появляющихся элеметов на дороге
 def things(thingx, thingy, thingw, thingh, color):
     pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
@@ -67,6 +74,7 @@ def game_loop():
     x_change = 0
 
     gameExit = False
+    dodged = 0
 
     thing_startx = random.randrange(0, display_width)
     thing_starty = -600
@@ -100,15 +108,31 @@ def game_loop():
 
         # создаем машину
         car(x, y)
+        things_dodged(dodged)
 
         if x > display_width - car_width or x < 0:
             crash()
-            gameExit = True
 
+        # логика для счетчика
+        if thing_starty > display_height:
+            thing_starty = 0 - thing_height
+            thing_startx = random.randrange(0, display_width)
+            dodged += 1
+            thing_speed += 1
+            thing_width += (dodged * 1.2)
+
+
+        # логика для появления помех
         if thing_starty > display_height:
             thing_starty = 0 - thing_height
             thing_startx = random.randrange(0, display_width)
 
+        if y < thing_starty + thing_height:
+            print('y crossover')
+
+            if x > thing_startx and x < thing_startx + thing_width or x + car_width > thing_startx and x + car_width < thing_startx + thing_width:
+                print('x crossover')
+                crash()
 
         pygame.display.update()
         # кадры в секунду = 60
